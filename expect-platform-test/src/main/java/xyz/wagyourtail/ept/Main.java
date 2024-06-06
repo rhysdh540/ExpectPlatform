@@ -13,6 +13,7 @@ public class Main {
         Target.getCurrentTarget();
 
         System.out.println(platformTest("test"));
+        System.out.println(platformTest2("test"));
 
         try {
             Main.class.getDeclaredMethod("platformOnlyTest");
@@ -31,6 +32,11 @@ public class Main {
     public static String platformTest(String name) {
         throw new AssertionError();
     }
+
+	@ExpectPlatform
+	public static String platformTest2(String name) {
+		throw new AssertionError();
+	}
 
     @PlatformOnly({"a", "b"})
     public static void platformOnlyTest() {

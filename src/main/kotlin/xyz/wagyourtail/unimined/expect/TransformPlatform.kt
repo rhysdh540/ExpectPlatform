@@ -53,16 +53,25 @@ class TransformPlatform(val platformName: String) {
         }
 
         @Suppress("UNCHECKED_CAST")
-        val platforms = annotation.values[1] as List<AnnotationNode>
+        val platforms = annotation.values?.let {
+            for (i in it.indices step 2) {
+                if(it[i] == "platforms") {
+                    return@let it[i + 1] as List<AnnotationNode>
+                }
+            }
+            null
+        }
 
         var platformClass: String? = null
 
-        for (platform in platforms) {
-            val name = platform.values[1] as String
-            val clazz = platform.values[3] as String
-            if(name == platformName) {
-                platformClass = clazz
-                break
+        if (platforms != null) {
+            for (platform in platforms) {
+                val name = platform.values[1] as String
+                val clazz = platform.values[3] as String
+                if(name == platformName) {
+                    platformClass = clazz
+                    break
+                }
             }
         }
 
@@ -91,7 +100,14 @@ class TransformPlatform(val platformName: String) {
 
     private fun platformOnly(method: MethodNode, classNode: ClassNode, annotation: AnnotationNode) {
         @Suppress("UNCHECKED_CAST")
-        val platforms = annotation.values[1] as List<String>
+        val platforms = annotation.values?.let {
+            for (i in it.indices step 2) {
+                if(it[i] == "platforms") {
+                    return@let it[i + 1] as List<String>
+                }
+            }
+            null
+        } ?: error("No platforms specified in @PlatformOnly annotation")
 
         if(platformName !in platforms) {
             classNode.methods.remove(method)
